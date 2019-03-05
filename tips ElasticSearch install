@@ -1,0 +1,34 @@
+Elastic-search Upgrade
+There are 3 VMS that form the Elastic-search cluster. The configuration is defined in the elasticsearch.yml file. This file is placed in location -- /etc/elasticsearch/elasticsearch.yml
+This file contains the following 
+		cluster.name : 'elasticsearch'
+node.name	: 'localhost'
+path.data	: <path-of-the-data-folder> Location where the indexed  
+   data is to be stored.
+path.logs	: <path-of-the-log-folder> Location where the log is to 
+  be stored.
+network.host	: 0.0.0.0
+transport.tcp.port: 9300
+http.port: 9200
+indices.query.bool.max_clause_count: 10240 <Length of the query>
+bootstrap.system_call_filter: false
+script.engine.groovy.inline.search: on
+
+The below settings has to be changed for elastic-search to start seamlessly
+Open “/etc/security/limits.conf” and add the following;
+* soft nofile 65536
+* hard nofile 131072
+* soft nproc 2048
+* hard nproc 4096
+	
+Open “vim /etc/security/limits.d/90-nproc.conf” and add the following;
+		#*          soft    nproc     1024
+  *          soft    nproc     2048
+
+	Open “vim /etc/sysctl.conf”
+		# Added for Elasticsearch
+   vm.max_map_count = 262144
+	
+execute the command -> “sysctl -p”
+If we do not specify the cluster-name, elastic-search will assign a default name to the cluster as “elasticsearch”
+The cluster-name in the elasticsearch.yml and the in the java client should be the same. 
